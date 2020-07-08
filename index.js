@@ -6,8 +6,16 @@ try {
   core.setOutput("time", time);
   
   const payload = github.context.payload;
-  const authors = [payload.author.username, payload.commiter.username, payload.sender.login];
-  const authorRegex = [...new Set(authors)].join('|');
+
+  const hasAuthorUsername = [payload.commits, payload.head_commit].flat();
+  const commitUsernames = hasAuthorUsername.reduce((acc, p) => {
+    acc.push(p.author.username, p.committer.username);
+    return acc;
+  }, []);
+
+  commitUsernames.push(payload.pusher.name, payload.sender.login);
+  
+  const authorRegex = [...new Set(commitUsernames)].join('|');
   const todoRegex = `TODO.*?${authorRegex}`;
   core.setOutput("todoRegex", todoRegex);
 } catch (error) {
