@@ -16,8 +16,9 @@ try {
   commitUsernames.push(payload.pusher.name, payload.sender.login);
   
   const authorRegex = [...new Set(commitUsernames)].join('|');
-  const todoRegex = `TODO.*?${authorRegex}`;
+  const todoRegex = `\b[T]ODO(?!-badger).*?${authorRegex}\b`;
   core.setOutput("todoRegex", todoRegex);
+  core.setOutput("gitGrepFlags", "-i -P");
 } catch (error) {
   core.setFailed(error.message);
 }
